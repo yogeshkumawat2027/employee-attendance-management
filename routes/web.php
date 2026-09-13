@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ReportController;
 
 // Redirect root to login/dashboard
 Route::get('/', function () {
@@ -54,4 +55,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])
         ->name('attendance.update');
+
+    Route::get('/reports/daily', [ReportController::class, 'daily'])
+        ->name('reports.daily');
 });
