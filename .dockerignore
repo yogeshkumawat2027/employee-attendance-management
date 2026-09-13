@@ -1,0 +1,11 @@
+id="5v7x2k"
+.git
+.gitignore
+.env
+.env.*
+vendor
+node_modules
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
