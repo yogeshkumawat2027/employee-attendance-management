@@ -36,15 +36,22 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/attendance/logout', [AttendanceController::class, 'logout'])
         ->name('attendance.logout');
-        
+
     Route::get('/my-attendance', [AttendanceController::class, 'employee'])
     ->name('attendance.employee');
 });
 
 // Admin-only routes
 Route::middleware(['auth', 'admin'])->group(function () {
+
     Route::resource('employees', EmployeeController::class);
 
     Route::get('/attendance', [AttendanceController::class, 'index'])
         ->name('attendance.index');
+
+    Route::get('/attendance/{attendance}/edit', [AttendanceController::class, 'edit'])
+        ->name('attendance.edit');
+
+    Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])
+        ->name('attendance.update');
 });

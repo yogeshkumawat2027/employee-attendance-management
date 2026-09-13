@@ -20,14 +20,29 @@
 
         <div>
             <h2>Attendance Management</h2>
+
             <p class="text-muted mb-0">
                 Manage employee attendance
             </p>
         </div>
 
-        <a href="{{ route('dashboard') }}" class="btn btn-outline-primary">
-            Dashboard
-        </a>
+        <div class="d-flex gap-2">
+
+            <a
+                href="{{ route('dashboard') }}"
+                class="btn btn-outline-primary"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{{ route('employees.index') }}"
+                class="btn btn-primary"
+            >
+                Employees
+            </a>
+
+        </div>
 
     </div>
 
@@ -52,15 +67,27 @@
                 <table class="table table-bordered table-hover align-middle">
 
                     <thead class="table-light">
+
                         <tr>
+
                             <th>Employee Code</th>
+
                             <th>Employee</th>
+
                             <th>Date</th>
+
                             <th>Login</th>
+
                             <th>Logout</th>
+
                             <th>Working Hours</th>
+
                             <th>Status</th>
+
+                            <th>Action</th>
+
                         </tr>
+
                     </thead>
 
                     <tbody>
@@ -96,30 +123,47 @@
                                 <td>
 
                                     @if($attendance->status === 'Present')
+
                                         <span class="badge bg-success">
                                             Present
                                         </span>
 
                                     @elseif($attendance->status === 'Half Day')
+
                                         <span class="badge bg-warning text-dark">
                                             Half Day
                                         </span>
 
                                     @elseif($attendance->status === 'Leave')
+
                                         <span class="badge bg-info">
                                             Leave
                                         </span>
 
                                     @elseif($attendance->status === 'Holiday')
+
                                         <span class="badge bg-secondary">
                                             Holiday
                                         </span>
 
                                     @else
+
                                         <span class="badge bg-danger">
                                             Absent
                                         </span>
+
                                     @endif
+
+                                </td>
+
+                                <td>
+
+                                    <a
+                                        href="{{ route('attendance.edit', $attendance) }}"
+                                        class="btn btn-sm btn-outline-primary"
+                                    >
+                                        Edit
+                                    </a>
 
                                 </td>
 
@@ -128,9 +172,14 @@
                         @empty
 
                             <tr>
-                                <td colspan="7" class="text-center text-muted py-4">
+
+                                <td
+                                    colspan="8"
+                                    class="text-center text-muted py-4"
+                                >
                                     No attendance records found.
                                 </td>
+
                             </tr>
 
                         @endforelse
