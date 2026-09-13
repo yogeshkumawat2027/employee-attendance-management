@@ -1,157 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employees</title>
+@extends('layouts.app')
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
+@section('content')
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="page-title mb-1">
+            Employees
+        </h2>
+
+        <p class="page-subtitle mb-0">
+            Manage all employees
+        </p>
+    </div>
+
+    <a
+        href="{{ route('employees.create') }}"
+        class="btn btn-primary"
     >
-</head>
+        + Add Employee
+    </a>
 
-<body class="bg-light">
+</div>
 
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-        <a href="{{ url('/') }}" class="navbar-brand">
-            Attendance Management
-        </a>
-    </div>
-</nav>
+<div class="card shadow-sm">
 
-<div class="container py-5">
+    <div class="card-body p-0">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Employees</h1>
+        <div class="table-responsive">
 
-        <a href="{{ route('employees.create') }}" class="btn btn-primary">
-            + Add Employee
-        </a>
-    </div>
+            <table class="table table-hover">
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+                <thead class="table-light">
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
 
-            @if($employees->count())
+                </thead>
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                <tbody>
 
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Employee Code</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Department</th>
-                                <th>Designation</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+                    @forelse($employees as $employee)
 
-                        <tbody>
-                            @foreach($employees as $employee)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
+                        <tr>
 
-                                    <td>
-                                        {{ $employee->employee_code }}
-                                    </td>
+                            <td>
+                                <strong>
+                                    {{ $employee->employee_code }}
+                                </strong>
+                            </td>
 
-                                    <td>
-                                        {{ $employee->name }}
-                                    </td>
+                            <td>
+                                {{ $employee->name }}
+                            </td>
 
-                                    <td>
-                                        {{ $employee->email }}
-                                    </td>
+                            <td>
+                                {{ $employee->email }}
+                            </td>
 
-                                    <td>
-                                        {{ $employee->department ?? '-' }}
-                                    </td>
+                            <td>
+                                {{ $employee->department ?? '-' }}
+                            </td>
 
-                                    <td>
-                                        {{ $employee->designation ?? '-' }}
-                                    </td>
+                            <td>
+                                {{ $employee->designation ?? '-' }}
+                            </td>
 
-                                    <td>
-                                        @if($employee->is_active)
-                                            <span class="badge bg-success">
-                                                Active
-                                            </span>
-                                        @else
-                                            <span class="badge bg-secondary">
-                                                Inactive
-                                            </span>
-                                        @endif
-                                    </td>
+                            <td>
 
-                                    <td>
-                                        <a
-                                            href="{{ route('employees.edit', $employee) }}"
-                                            class="btn btn-sm btn-warning"
+                                @if($employee->is_active)
+
+                                    <span class="badge bg-success">
+                                        Active
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-secondary">
+                                        Inactive
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            <td>
+
+                                <div class="d-flex gap-2">
+
+                                    <a
+                                        href="{{ route('employees.edit', $employee) }}"
+                                        class="btn btn-sm btn-outline-primary"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    @if($employee->is_active)
+
+                                        <form
+                                            action="{{ route('employees.destroy', $employee) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Deactivate this employee?')"
                                         >
-                                            Edit
-                                        </a>
 
-                                        @if($employee->is_active)
-                                            <form
-                                                action="{{ route('employees.destroy', $employee) }}"
-                                                method="POST"
-                                                class="d-inline"
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-sm btn-outline-danger"
                                             >
-                                                @csrf
-                                                @method('DELETE')
+                                                Deactivate
+                                            </button>
 
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Deactivate this employee?')"
-                                                >
-                                                    Deactivate
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
+                                        </form>
 
-                    </table>
-                </div>
+                                    @endif
 
-            @else
+                                </div>
 
-                <div class="text-center py-5">
-                    <h5>No employees found</h5>
+                            </td>
 
-                    <p class="text-muted">
-                        Add your first employee to get started.
-                    </p>
+                        </tr>
 
-                    <a
-                        href="{{ route('employees.create') }}"
-                        class="btn btn-primary"
-                    >
-                        Add Employee
-                    </a>
-                </div>
+                    @empty
 
-            @endif
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center text-muted py-5"
+                            >
+                                No employees found.
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
 
         </div>
+
     </div>
 
 </div>
 
-</body>
-</html>
+@endsection

@@ -1,178 +1,275 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>My Attendance</title>
+@section('content')
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-</head>
+<div class="mb-4">
 
-<body class="bg-light">
+    <h2 class="page-title mb-1">
+        My Attendance
+    </h2>
 
-<div class="container py-5">
+    <p class="page-subtitle mb-0">
+        Mark today's attendance and view your history
+    </p>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2>My Attendance</h2>
-            <p class="text-muted mb-0">
-                Welcome, {{ auth()->user()->name }}
-            </p>
-        </div>
+</div>
 
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger">
-                Logout
-            </button>
-        </form>
-    </div>
+<div class="card shadow-sm mb-4">
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+    <div class="card-body p-4">
 
-    @if(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
+            <div>
+                <h5 class="fw-bold mb-1">
+                    Today's Attendance
+                </h5>
 
-            <h5 class="mb-3">Today's Attendance</h5>
+                <span class="text-muted">
+                    {{ today()->format('d M Y') }}
+                </span>
+            </div>
 
             @if($todayAttendance)
 
-                <div class="row">
+                @if($todayAttendance->status === 'Present')
 
-                    <div class="col-md-3">
-                        <strong>Date</strong>
-                        <p>{{ $todayAttendance->attendance_date->format('d M Y') }}</p>
+                    <span class="badge bg-success fs-6">
+                        Present
+                    </span>
+
+                @elseif($todayAttendance->status === 'Half Day')
+
+                    <span class="badge bg-warning text-dark fs-6">
+                        Half Day
+                    </span>
+
+                @else
+
+                    <span class="badge bg-secondary fs-6">
+                        {{ $todayAttendance->status }}
+                    </span>
+
+                @endif
+
+            @endif
+
+        </div>
+
+        @if($todayAttendance)
+
+            <div class="row g-4 mb-4">
+
+                <div class="col-md-3">
+
+                    <div class="text-muted small">
+                        Employee
                     </div>
 
-                    <div class="col-md-3">
-                        <strong>Login</strong>
-                        <p>
-                            {{ $todayAttendance->login_time ?? '-' }}
-                        </p>
-                    </div>
-
-                    <div class="col-md-3">
-                        <strong>Logout</strong>
-                        <p>
-                            {{ $todayAttendance->logout_time ?? '-' }}
-                        </p>
-                    </div>
-
-                    <div class="col-md-3">
-                        <strong>Status</strong>
-                        <p>
-                            <span class="badge bg-primary">
-                                {{ $todayAttendance->status }}
-                            </span>
-                        </p>
-                    </div>
+                    <strong>
+                        {{ $employee->name }}
+                    </strong>
 
                 </div>
 
-                @if(!$todayAttendance->logout_time)
-                    <form action="{{ route('attendance.logout') }}" method="POST">
-                        @csrf
+                <div class="col-md-3">
 
-                        <button type="submit" class="btn btn-danger">
-                            Mark Logout
-                        </button>
-                    </form>
-                @endif
+                    <div class="text-muted small">
+                        Login
+                    </div>
+
+                    <strong>
+                        {{ $todayAttendance->login_time ?? '-' }}
+                    </strong>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="text-muted small">
+                        Logout
+                    </div>
+
+                    <strong>
+                        {{ $todayAttendance->logout_time ?? '-' }}
+                    </strong>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="text-muted small">
+                        Working Hours
+                    </div>
+
+                    <strong>
+                        {{ $todayAttendance->working_hours ?? '-' }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+            @if(!$todayAttendance->logout_time)
+
+                <form
+                    action="{{ route('attendance.logout') }}"
+                    method="POST"
+                >
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                    >
+                        Mark Logout
+                    </button>
+
+                </form>
 
             @else
+
+                <div class="alert alert-success mb-0">
+                    Today's attendance is complete.
+                </div>
+
+            @endif
+
+        @else
+
+            <div class="text-center py-3">
 
                 <p class="text-muted">
                     You have not marked attendance today.
                 </p>
 
-                <form action="{{ route('attendance.login') }}" method="POST">
+                <form
+                    action="{{ route('attendance.login') }}"
+                    method="POST"
+                >
+
                     @csrf
 
-                    <button type="submit" class="btn btn-success">
+                    <button
+                        type="submit"
+                        class="btn btn-success px-4"
+                    >
                         Mark Login
                     </button>
+
                 </form>
 
-            @endif
+            </div>
 
-        </div>
+        @endif
+
     </div>
 
-    <div class="card shadow-sm">
+</div>
 
-        <div class="card-body">
+<div class="card shadow-sm">
 
-            <h5 class="mb-3">Attendance History</h5>
+    <div class="card-body">
 
-            <div class="table-responsive">
+        <h5 class="fw-bold mb-3">
+            Attendance History
+        </h5>
 
-                <table class="table table-bordered align-middle">
+        <div class="table-responsive">
 
-                    <thead>
+            <table class="table table-hover">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Date</th>
+                        <th>Login</th>
+                        <th>Logout</th>
+                        <th>Working Hours</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @forelse($attendances as $attendance)
+
                         <tr>
-                            <th>Date</th>
-                            <th>Login</th>
-                            <th>Logout</th>
-                            <th>Working Hours</th>
-                            <th>Status</th>
+
+                            <td>
+                                {{ $attendance->attendance_date->format('d M Y') }}
+                            </td>
+
+                            <td>
+                                {{ $attendance->login_time ?? '-' }}
+                            </td>
+
+                            <td>
+                                {{ $attendance->logout_time ?? '-' }}
+                            </td>
+
+                            <td>
+                                {{ $attendance->working_hours ?? '-' }}
+                            </td>
+
+                            <td>
+
+                                @if($attendance->status === 'Present')
+
+                                    <span class="badge bg-success">
+                                        Present
+                                    </span>
+
+                                @elseif($attendance->status === 'Half Day')
+
+                                    <span class="badge bg-warning text-dark">
+                                        Half Day
+                                    </span>
+
+                                @elseif($attendance->status === 'Leave')
+
+                                    <span class="badge bg-info">
+                                        Leave
+                                    </span>
+
+                                @elseif($attendance->status === 'Holiday')
+
+                                    <span class="badge bg-secondary">
+                                        Holiday
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-danger">
+                                        Absent
+                                    </span>
+
+                                @endif
+
+                            </td>
+
                         </tr>
-                    </thead>
 
-                    <tbody>
+                    @empty
 
-                        @forelse($attendances as $attendance)
+                        <tr>
 
-                            <tr>
-                                <td>
-                                    {{ $attendance->attendance_date->format('d M Y') }}
-                                </td>
+                            <td
+                                colspan="5"
+                                class="text-center text-muted py-5"
+                            >
+                                No attendance history found.
+                            </td>
 
-                                <td>
-                                    {{ $attendance->login_time ?? '-' }}
-                                </td>
+                        </tr>
 
-                                <td>
-                                    {{ $attendance->logout_time ?? '-' }}
-                                </td>
+                    @endforelse
 
-                                <td>
-                                    {{ $attendance->working_hours ?? '-' }}
-                                </td>
+                </tbody>
 
-                                <td>
-                                    {{ $attendance->status }}
-                                </td>
-                            </tr>
-
-                        @empty
-
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">
-                                    No attendance records found.
-                                </td>
-                            </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            </table>
 
         </div>
 
@@ -180,5 +277,4 @@
 
 </div>
 
-</body>
-</html>
+@endsection

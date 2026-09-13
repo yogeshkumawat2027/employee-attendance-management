@@ -1,227 +1,192 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>Daily Attendance Report</title>
+@section('content')
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="page-title mb-1">
+            Daily Attendance Report
+        </h2>
+
+        <p class="page-subtitle mb-0">
+            Attendance of all active employees
+        </p>
+
+    </div>
+
+    <a
+        href="{{ route('reports.monthly') }}"
+        class="btn btn-outline-primary"
     >
-</head>
+        Monthly Report
+    </a>
 
-<body class="bg-light">
+</div>
 
-<div class="container py-5">
+<div class="card shadow-sm mb-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="card-body">
 
-        <div>
-            <h2>Daily Attendance Report</h2>
+        <form
+            action="{{ route('reports.daily') }}"
+            method="GET"
+            class="row g-3 align-items-end"
+        >
 
-            <p class="text-muted mb-0">
-                View attendance for a specific date
-            </p>
-        </div>
+            <div class="col-md-4">
 
-        <div class="d-flex gap-2">
+                <label class="form-label fw-semibold">
+                    Select Date
+                </label>
 
-            <a
-                href="{{ route('dashboard') }}"
-                class="btn btn-outline-primary"
-            >
-                Dashboard
-            </a>
+                <input
+                    type="date"
+                    name="date"
+                    class="form-control"
+                    value="{{ $date }}"
+                    required
+                >
 
-            <a
-                href="{{ route('attendance.index') }}"
-                class="btn btn-outline-secondary"
-            >
-                Attendance
-            </a>
+            </div>
 
-        </div>
+            <div class="col-md-3">
 
-    </div>
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    View Report
+                </button>
 
-    {{-- Date Filter --}}
+            </div>
 
-    <div class="card shadow-sm mb-4">
-
-        <div class="card-body">
-
-            <form
-                action="{{ route('reports.daily') }}"
-                method="GET"
-                class="row g-3 align-items-end"
-            >
-
-                <div class="col-md-4">
-
-                    <label class="form-label">
-                        Select Date
-                    </label>
-
-                    <input
-                        type="date"
-                        name="date"
-                        class="form-control"
-                        value="{{ $date }}"
-                        required
-                    >
-
-                </div>
-
-                <div class="col-md-2">
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-                        View Report
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
 
-    {{-- Attendance Table --}}
+</div>
 
-    <div class="card shadow-sm">
+<div class="card shadow-sm">
 
-        <div class="card-body">
+    <div class="card-body">
 
-            <h5 class="mb-3">
-                Attendance for
-                {{ \Carbon\Carbon::parse($date)->format('d M Y') }}
-            </h5>
+        <h5 class="fw-bold mb-3">
 
-            <div class="table-responsive">
+            {{ \Carbon\Carbon::parse($date)->format('d M Y') }}
 
-                <table class="table table-bordered table-hover align-middle">
+        </h5>
 
-                    <thead class="table-light">
+        <div class="table-responsive">
+
+            <table class="table table-hover">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Code</th>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Login</th>
+                        <th>Logout</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @forelse($employees as $employee)
+
+                        @php
+                            $attendance = $attendances->get($employee->id);
+                            $status = $attendance?->status ?? 'Absent';
+                        @endphp
 
                         <tr>
 
-                            <th>Employee Code</th>
+                            <td>
+                                {{ $employee->employee_code }}
+                            </td>
 
-                            <th>Employee</th>
+                            <td>
+                                {{ $employee->name }}
+                            </td>
 
-                            <th>Department</th>
+                            <td>
+                                {{ $employee->department ?? '-' }}
+                            </td>
 
-                            <th>Login</th>
+                            <td>
+                                {{ $attendance?->login_time ?? '-' }}
+                            </td>
 
-                            <th>Logout</th>
+                            <td>
+                                {{ $attendance?->logout_time ?? '-' }}
+                            </td>
 
-                            <th>Working Hours</th>
+                            <td>
+                                {{ $attendance?->working_hours ?? '-' }}
+                            </td>
 
-                            <th>Status</th>
+                            <td>
+
+                                @if($status === 'Present')
+
+                                    <span class="badge bg-success">
+                                        Present
+                                    </span>
+
+                                @elseif($status === 'Half Day')
+
+                                    <span class="badge bg-warning text-dark">
+                                        Half Day
+                                    </span>
+
+                                @elseif($status === 'Leave')
+
+                                    <span class="badge bg-info">
+                                        Leave
+                                    </span>
+
+                                @elseif($status === 'Holiday')
+
+                                    <span class="badge bg-secondary">
+                                        Holiday
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-danger">
+                                        Absent
+                                    </span>
+
+                                @endif
+
+                            </td>
 
                         </tr>
 
-                    </thead>
+                    @empty
 
-                    <tbody>
+                        <tr>
 
-                        @forelse($employees as $employee)
+                            <td
+                                colspan="7"
+                                class="text-center text-muted py-5"
+                            >
+                                No active employees found.
+                            </td>
 
-                            @php
-                                $attendance = $attendances->get($employee->id);
+                        </tr>
 
-                                $status = $attendance?->status ?? 'Absent';
-                            @endphp
+                    @endforelse
 
-                            <tr>
+                </tbody>
 
-                                <td>
-                                    {{ $employee->employee_code }}
-                                </td>
-
-                                <td>
-                                    {{ $employee->name }}
-                                </td>
-
-                                <td>
-                                    {{ $employee->department ?? '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $attendance?->login_time ?? '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $attendance?->logout_time ?? '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $attendance?->working_hours ?? '-' }}
-                                </td>
-
-                                <td>
-
-                                    @if($status === 'Present')
-
-                                        <span class="badge bg-success">
-                                            Present
-                                        </span>
-
-                                    @elseif($status === 'Half Day')
-
-                                        <span class="badge bg-warning text-dark">
-                                            Half Day
-                                        </span>
-
-                                    @elseif($status === 'Leave')
-
-                                        <span class="badge bg-info">
-                                            Leave
-                                        </span>
-
-                                    @elseif($status === 'Holiday')
-
-                                        <span class="badge bg-secondary">
-                                            Holiday
-                                        </span>
-
-                                    @else
-
-                                        <span class="badge bg-danger">
-                                            Absent
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-                            </tr>
-
-                        @empty
-
-                            <tr>
-
-                                <td
-                                    colspan="7"
-                                    class="text-center text-muted py-4"
-                                >
-                                    No active employees found.
-                                </td>
-
-                            </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            </table>
 
         </div>
 
@@ -229,5 +194,4 @@
 
 </div>
 
-</body>
-</html>
+@endsection

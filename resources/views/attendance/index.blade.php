@@ -1,194 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>Attendance Management</title>
+@section('content')
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-</head>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<body class="bg-light">
+    <div>
+        <h2 class="page-title mb-1">
+            Attendance
+        </h2>
 
-<div class="container py-5">
+        <p class="page-subtitle mb-0">
+            Manage employee attendance records
+        </p>
+    </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex gap-2">
 
-        <div>
-            <h2>Attendance Management</h2>
+        <a
+            href="{{ route('reports.daily') }}"
+            class="btn btn-outline-primary"
+        >
+            Daily Report
+        </a>
 
-            <p class="text-muted mb-0">
-                Manage employee attendance
-            </p>
-        </div>
-
-        <div class="d-flex gap-2">
-
-            <a
-                href="{{ route('dashboard') }}"
-                class="btn btn-outline-primary"
-            >
-                Dashboard
-            </a>
-
-            <a
-                href="{{ route('employees.index') }}"
-                class="btn btn-primary"
-            >
-                Employees
-            </a>
-
-        </div>
+        <a
+            href="{{ route('reports.monthly') }}"
+            class="btn btn-outline-secondary"
+        >
+            Monthly Report
+        </a>
 
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+</div>
 
-    @if(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
+<div class="card shadow-sm">
 
-    <div class="card shadow-sm">
+    <div class="card-body p-0">
 
-        <div class="card-body">
+        <div class="table-responsive">
 
-            <div class="table-responsive">
+            <table class="table table-hover">
 
-                <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
 
-                    <thead class="table-light">
+                    <tr>
+                        <th>Employee</th>
+                        <th>Code</th>
+                        <th>Date</th>
+                        <th>Login</th>
+                        <th>Logout</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @forelse($attendances as $attendance)
 
                         <tr>
 
-                            <th>Employee Code</th>
+                            <td>
+                                {{ $attendance->employee->name }}
+                            </td>
 
-                            <th>Employee</th>
+                            <td>
+                                {{ $attendance->employee->employee_code }}
+                            </td>
 
-                            <th>Date</th>
+                            <td>
+                                {{ $attendance->attendance_date->format('d M Y') }}
+                            </td>
 
-                            <th>Login</th>
+                            <td>
+                                {{ $attendance->login_time ?? '-' }}
+                            </td>
 
-                            <th>Logout</th>
+                            <td>
+                                {{ $attendance->logout_time ?? '-' }}
+                            </td>
 
-                            <th>Working Hours</th>
+                            <td>
+                                {{ $attendance->working_hours ?? '-' }}
+                            </td>
 
-                            <th>Status</th>
+                            <td>
 
-                            <th>Action</th>
+                                @if($attendance->status === 'Present')
+
+                                    <span class="badge bg-success">
+                                        Present
+                                    </span>
+
+                                @elseif($attendance->status === 'Half Day')
+
+                                    <span class="badge bg-warning text-dark">
+                                        Half Day
+                                    </span>
+
+                                @elseif($attendance->status === 'Leave')
+
+                                    <span class="badge bg-info">
+                                        Leave
+                                    </span>
+
+                                @elseif($attendance->status === 'Holiday')
+
+                                    <span class="badge bg-secondary">
+                                        Holiday
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-danger">
+                                        Absent
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{{ route('attendance.edit', $attendance) }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                >
+                                    Edit
+                                </a>
+
+                            </td>
 
                         </tr>
 
-                    </thead>
+                    @empty
 
-                    <tbody>
+                        <tr>
 
-                        @forelse($attendances as $attendance)
+                            <td
+                                colspan="8"
+                                class="text-center text-muted py-5"
+                            >
+                                No attendance records found.
+                            </td>
 
-                            <tr>
+                        </tr>
 
-                                <td>
-                                    {{ $attendance->employee->employee_code }}
-                                </td>
+                    @endforelse
 
-                                <td>
-                                    {{ $attendance->employee->name }}
-                                </td>
+                </tbody>
 
-                                <td>
-                                    {{ $attendance->attendance_date->format('d M Y') }}
-                                </td>
-
-                                <td>
-                                    {{ $attendance->login_time ?? '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $attendance->logout_time ?? '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $attendance->working_hours ?? '-' }}
-                                </td>
-
-                                <td>
-
-                                    @if($attendance->status === 'Present')
-
-                                        <span class="badge bg-success">
-                                            Present
-                                        </span>
-
-                                    @elseif($attendance->status === 'Half Day')
-
-                                        <span class="badge bg-warning text-dark">
-                                            Half Day
-                                        </span>
-
-                                    @elseif($attendance->status === 'Leave')
-
-                                        <span class="badge bg-info">
-                                            Leave
-                                        </span>
-
-                                    @elseif($attendance->status === 'Holiday')
-
-                                        <span class="badge bg-secondary">
-                                            Holiday
-                                        </span>
-
-                                    @else
-
-                                        <span class="badge bg-danger">
-                                            Absent
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-                                <td>
-
-                                    <a
-                                        href="{{ route('attendance.edit', $attendance) }}"
-                                        class="btn btn-sm btn-outline-primary"
-                                    >
-                                        Edit
-                                    </a>
-
-                                </td>
-
-                            </tr>
-
-                        @empty
-
-                            <tr>
-
-                                <td
-                                    colspan="8"
-                                    class="text-center text-muted py-4"
-                                >
-                                    No attendance records found.
-                                </td>
-
-                            </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            </table>
 
         </div>
 
@@ -196,5 +161,4 @@
 
 </div>
 
-</body>
-</html>
+@endsection

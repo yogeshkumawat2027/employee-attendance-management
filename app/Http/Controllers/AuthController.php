@@ -5,38 +5,48 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AuthController extends Controller
-{
-    public function showLogin()
-    {
+class AuthController {
+
+    public function showLogin() {
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
+
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        if (!Auth::attempt($credentials)) {
 
+            return back()
+                ->withErrors([
+                    'email' => 'Invalid email or password.',
+                ])
+                ->onlyInput('email');
+        }
+
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
             return redirect()->route('dashboard');
         }
 
-        return back()->withErrors([
-            'email' => 'Invalid email or password.',
-        ])->onlyInput('email');
+        return redirect()->route('attendance.employee');
     }
 
-    public function logout(Request $request)
-    {
+    public function logout(Request $request) {
+
         Auth::logout();
 
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
     }
 }
+

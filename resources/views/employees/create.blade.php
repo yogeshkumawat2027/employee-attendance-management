@@ -1,140 +1,185 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Employee</title>
+@extends('layouts.app')
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
+@section('content')
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="page-title mb-1">
+            Add Employee
+        </h2>
+
+        <p class="page-subtitle mb-0">
+            Create a new employee account
+        </p>
+    </div>
+
+    <a
+        href="{{ route('employees.index') }}"
+        class="btn btn-outline-secondary"
     >
-</head>
+        Back
+    </a>
 
-<body class="bg-light">
+</div>
 
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-        <a href="{{ route('employees.index') }}" class="navbar-brand">
-            Attendance Management
-        </a>
-    </div>
-</nav>
+<div class="card shadow-sm">
 
-<div class="container py-5">
+    <div class="card-body p-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Add Employee</h1>
+        <form
+            action="{{ route('employees.store') }}"
+            method="POST"
+        >
 
-        <a href="{{ route('employees.index') }}" class="btn btn-secondary">
-            Back
-        </a>
-    </div>
+            @csrf
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+            <div class="row">
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+                <div class="col-md-6 mb-3">
 
-            <form action="{{ route('employees.store') }}" method="POST">
+                    <label class="form-label">
+                        Employee Code
+                    </label>
 
-                @csrf
+                    <input
+                        type="text"
+                        name="employee_code"
+                        class="form-control"
+                        value="{{ old('employee_code') }}"
+                        required
+                    >
 
-                <div class="row">
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Employee Code</label>
-                        <input
-                            type="text"
-                            name="employee_code"
-                            class="form-control"
-                            value="{{ old('employee_code') }}"
-                            required
-                        >
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            class="form-control"
-                            value="{{ old('name') }}"
-                            required
-                        >
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            class="form-control"
-                            value="{{ old('email') }}"
-                            required
-                        >
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Phone</label>
-                        <input
-                            type="text"
-                            name="phone"
-                            class="form-control"
-                            value="{{ old('phone') }}"
-                        >
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Department</label>
-                        <input
-                            type="text"
-                            name="department"
-                            class="form-control"
-                            value="{{ old('department') }}"
-                        >
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Designation</label>
-                        <input
-                            type="text"
-                            name="designation"
-                            class="form-control"
-                            value="{{ old('designation') }}"
-                        >
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Joining Date</label>
-                        <input
-                            type="date"
-                            name="joining_date"
-                            class="form-control"
-                            value="{{ old('joining_date') }}"
-                        >
-                    </div>
+                    @error('employee_code')
+                        <div class="text-danger small mt-1">
+                            {{ $message }}
+                        </div>
+                    @enderror
 
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    Add Employee
-                </button>
+                <div class="col-md-6 mb-3">
 
-            </form>
+                    <label class="form-label">
+                        Full Name
+                    </label>
 
-        </div>
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        value="{{ old('name') }}"
+                        required
+                    >
+
+                    @error('name')
+                        <div class="text-danger small mt-1">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        class="form-control"
+                        value="{{ old('email') }}"
+                        required
+                    >
+
+                    @error('email')
+                        <div class="text-danger small mt-1">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Phone
+                    </label>
+
+                    <input
+                        type="text"
+                        name="phone"
+                        class="form-control"
+                        value="{{ old('phone') }}"
+                    >
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Department
+                    </label>
+
+                    <input
+                        type="text"
+                        name="department"
+                        class="form-control"
+                        value="{{ old('department') }}"
+                    >
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Designation
+                    </label>
+
+                    <input
+                        type="text"
+                        name="designation"
+                        class="form-control"
+                        value="{{ old('designation') }}"
+                    >
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="form-label">
+                        Joining Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="joining_date"
+                        class="form-control"
+                        value="{{ old('joining_date') }}"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="alert alert-info">
+                Default employee password will be
+                <strong>password123</strong>.
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Create Employee
+            </button>
+
+        </form>
+
     </div>
 
 </div>
 
-</body>
-</html>
+@endsection
