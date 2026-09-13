@@ -10,6 +10,7 @@ use Exception;
 class AttendanceService {
 
     public function markLogin(Employee $employee) {
+
         if (!$employee->is_active) {
             throw new Exception('Employee is inactive.');
         }
@@ -25,15 +26,19 @@ class AttendanceService {
         }
 
         if (!$attendance) {
+
             $attendance = Attendance::create([
                 'employee_id' => $employee->id,
                 'attendance_date' => $today,
                 'login_time' => now()->format('H:i:s'),
-                'status' => 'Absent',
+                'status' => 'Present',
             ]);
+
         } else {
+
             $attendance->update([
                 'login_time' => now()->format('H:i:s'),
+                'status' => 'Present',
             ]);
         }
 
@@ -41,6 +46,7 @@ class AttendanceService {
     }
 
     public function markLogout(Employee $employee) {
+
         $today = Carbon::today();
 
         $attendance = Attendance::where('employee_id', $employee->id)
@@ -78,13 +84,18 @@ class AttendanceService {
         return $attendance;
     }
 
-    private function calculateWorkingHours(Carbon $loginTime, Carbon $logoutTime) {
+    private function calculateWorkingHours(
+        Carbon $loginTime,
+        Carbon $logoutTime
+    ) {
+
         $minutes = $loginTime->diffInMinutes($logoutTime);
 
         return round($minutes / 60, 2);
     }
 
     private function calculateStatus($workingHours) {
+
         if ($workingHours < 4) {
             return 'Half Day';
         }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Attendance Management System</title>
+    <title>Dashboard - Attendance Management</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -14,68 +14,118 @@
 
 <body class="bg-light">
 
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container">
-            <span class="navbar-brand">
-                Attendance Management System
-            </span>
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2>Attendance Management</h2>
+
+            <p class="text-muted mb-0">
+                Welcome, {{ auth()->user()->name }}
+            </p>
         </div>
-    </nav>
 
-    <main class="container py-5">
+        <div class="d-flex gap-2">
 
-        <h1 class="mb-4">Dashboard</h1>
+            @if(auth()->user()->role === 'admin')
 
-        <div class="row g-4">
+                <a
+                    href="{{ route('employees.index') }}"
+                    class="btn btn-primary"
+                >
+                    Employees
+                </a>
 
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="text-muted">Total Employees</h6>
-                        <h2>0</h2>
-                    </div>
-                </div>
-            </div>
+                <a
+                    href="{{ route('attendance.index') }}"
+                    class="btn btn-outline-primary"
+                >
+                    Attendance
+                </a>
 
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="text-muted">Present Today</h6>
-                        <h2>0</h2>
-                    </div>
-                </div>
-            </div>
+            @else
 
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="text-muted">Absent Today</h6>
-                        <h2>0</h2>
-                    </div>
-                </div>
-            </div>
+                <a
+                    href="{{ route('attendance.employee') }}"
+                    class="btn btn-primary"
+                >
+                    My Attendance
+                </a>
 
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="text-muted">Half Day</h6>
-                        <h2>0</h2>
-                    </div>
-                </div>
-            </div>
+            @endif
 
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="text-muted">Employees on Leave</h6>
-                        <h2>0</h2>
-                    </div>
-                </div>
-            </div>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+
+                <button
+                    type="submit"
+                    class="btn btn-outline-danger"
+                >
+                    Logout
+                </button>
+            </form>
 
         </div>
 
-    </main>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Total Employees</h5>
+                    <h2>{{ $totalEmployees }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Present Today</h5>
+                    <h2>{{ $presentToday }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Absent Today</h5>
+                    <h2>{{ $absentToday }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Half Day</h5>
+                    <h2>{{ $halfDayToday }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Employees on Leave</h5>
+                    <h2>{{ $leaveToday }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>
