@@ -36,6 +36,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/attendance/logout', [AttendanceController::class, 'logout'])
         ->name('attendance.logout');
+        
+    Route::get('/my-attendance', [AttendanceController::class, 'employee'])
+    ->name('attendance.employee');
 });
 
 // Admin-only routes

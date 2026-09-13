@@ -48,4 +48,25 @@ class AttendanceController {
 
         return view('attendance.index', compact('attendances'));
     }
+    public function employee() {
+         $employee = auth()->user()->employee;
+     
+         if (!$employee) {
+             abort(404, 'Employee profile not found.');
+         }
+     
+         $todayAttendance = $employee->attendances()
+             ->whereDate('attendance_date', today())
+             ->first();
+     
+        $attendances = $employee->attendances()
+            ->latest('attendance_date')
+            ->get();
+
+         return view('attendance.employee', compact(
+             'employee',
+             'todayAttendance',
+             'attendances'
+         ));
+    }
 }
