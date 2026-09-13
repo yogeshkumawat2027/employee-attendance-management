@@ -33,4 +33,41 @@ class ReportController {
             )
         );
     }
+
+    public function monthly(Request $request) {
+
+        $month = $request->input(
+            'month',
+            now()->format('m')
+        );
+
+        $year = $request->input(
+            'year',
+            now()->format('Y')
+        );
+
+        $employees = Employee::where('is_active', true)
+            ->orderBy('employee_code')
+            ->get();
+
+        $attendances = Attendance::whereYear(
+            'attendance_date',
+            $year
+        )
+            ->whereMonth(
+                'attendance_date',
+                $month
+            )
+            ->get();
+
+        return view(
+            'reports.monthly',
+            compact(
+                'employees',
+                'attendances',
+                'month',
+                'year'
+            )
+        );
+    }
 }

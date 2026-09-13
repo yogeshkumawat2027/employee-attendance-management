@@ -58,4 +58,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/reports/daily', [ReportController::class, 'daily'])
         ->name('reports.daily');
+    Route::get('/reports/monthly', [ReportController::class, 'monthly'])
+        ->name('reports.monthly');
 });
