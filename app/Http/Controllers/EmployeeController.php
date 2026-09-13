@@ -11,27 +11,71 @@ use Illuminate\Support\Facades\Hash;
 class EmployeeController {
 
     public function index() {
+
         $employees = Employee::latest()->get();
 
-        return view('employees.index', compact('employees'));
+        return view(
+            'employees.index',
+            compact('employees')
+        );
     }
 
     public function create() {
+
         return view('employees.create');
     }
 
     public function store(Request $request) {
+
         $validated = $request->validate([
-            'employee_code' => 'required|string|max:50|unique:employees,employee_code',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:employees,email|unique:users,email',
-            'phone' => 'nullable|string|max:20',
-            'department' => 'nullable|string|max:100',
-            'designation' => 'nullable|string|max:100',
-            'joining_date' => 'nullable|date',
+
+            'employee_code' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:employees,employee_code',
+            ],
+
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:employees,email',
+                'unique:users,email',
+            ],
+
+            'phone' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
+
+            'department' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'designation' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'joining_date' => [
+                'nullable',
+                'date',
+            ],
         ]);
 
         DB::transaction(function () use ($validated) {
+
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -47,38 +91,108 @@ class EmployeeController {
 
         return redirect()
             ->route('employees.index')
-            ->with('success', 'Employee added successfully.');
+            ->with(
+                'success',
+                'Employee added successfully.'
+            );
     }
 
     public function edit(Employee $employee) {
-        return view('employees.edit', compact('employee'));
+
+        return view(
+            'employees.edit',
+            compact('employee')
+        );
     }
 
-    public function update(Request $request, Employee $employee) {
+    public function update(
+        Request $request,
+        Employee $employee
+    ) {
+
         $validated = $request->validate([
-            'employee_code' => 'required|string|max:50|unique:employees,employee_code,' . $employee->id,
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:employees,email,' . $employee->id,
-            'phone' => 'nullable|string|max:20',
-            'department' => 'nullable|string|max:100',
-            'designation' => 'nullable|string|max:100',
-            'joining_date' => 'nullable|date',
+
+            'employee_code' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:employees,employee_code,' . $employee->id,
+            ],
+
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:employees,email,' . $employee->id,
+            ],
+
+            'phone' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
+
+            'department' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'designation' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'joining_date' => [
+                'nullable',
+                'date',
+            ],
         ]);
 
         $employee->update($validated);
 
         return redirect()
             ->route('employees.index')
-            ->with('success', 'Employee updated successfully.');
+            ->with(
+                'success',
+                'Employee updated successfully.'
+            );
     }
 
     public function destroy(Employee $employee) {
+
         $employee->update([
             'is_active' => false,
         ]);
 
         return redirect()
             ->route('employees.index')
-            ->with('success', 'Employee deactivated successfully.');
+            ->with(
+                'success',
+                'Employee deactivated successfully.'
+            );
+    }
+
+    public function attendance(Employee $employee) {
+
+        $attendances = $employee->attendances()
+            ->latest('attendance_date')
+            ->get();
+
+        return view(
+            'employees.attendance',
+            compact(
+                'employee',
+                'attendances'
+            )
+        );
     }
 }
+

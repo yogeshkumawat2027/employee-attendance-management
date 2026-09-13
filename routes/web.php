@@ -9,12 +9,14 @@ use App\Http\Controllers\ReportController;
 
 
 // Redirect root to dashboard
+
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
 
 // Authentication routes
+
 Route::middleware('guest')->group(function () {
 
     Route::get('/login', [AuthController::class, 'showLogin'])
@@ -26,51 +28,64 @@ Route::middleware('guest')->group(function () {
 
 
 // Logout
+
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
 
 // Authenticated routes
+
 Route::middleware('auth')->group(function () {
 
-    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-    // Employee attendance actions
     Route::post('/attendance/login', [AttendanceController::class, 'login'])
         ->name('attendance.login');
 
     Route::post('/attendance/logout', [AttendanceController::class, 'logout'])
         ->name('attendance.logout');
 
-    // Employee own attendance
     Route::get('/my-attendance', [AttendanceController::class, 'employee'])
         ->name('attendance.employee');
 });
 
 
 // Admin-only routes
+
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    // Employee management
     Route::resource('employees', EmployeeController::class);
 
-    // Attendance management
-    Route::get('/attendance', [AttendanceController::class, 'index'])
-        ->name('attendance.index');
+    Route::get(
+        '/employees/{employee}/attendance',
+        [EmployeeController::class, 'attendance']
+    )->name('employees.attendance');
 
-    Route::get('/attendance/{attendance}/edit', [AttendanceController::class, 'edit'])
-        ->name('attendance.edit');
+    Route::get(
+        '/attendance',
+        [AttendanceController::class, 'index']
+    )->name('attendance.index');
 
-    Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])
-        ->name('attendance.update');
+    Route::get(
+        '/attendance/{attendance}/edit',
+        [AttendanceController::class, 'edit']
+    )->name('attendance.edit');
 
-    // Reports
-    Route::get('/reports/daily', [ReportController::class, 'daily'])
-        ->name('reports.daily');
+    Route::put(
+        '/attendance/{attendance}',
+        [AttendanceController::class, 'update']
+    )->name('attendance.update');
 
-    Route::get('/reports/monthly', [ReportController::class, 'monthly'])
-        ->name('reports.monthly');
+    Route::get(
+        '/reports/daily',
+        [ReportController::class, 'daily']
+    )->name('reports.daily');
+
+    Route::get(
+        '/reports/monthly',
+        [ReportController::class, 'monthly']
+    )->name('reports.monthly');
 });
+

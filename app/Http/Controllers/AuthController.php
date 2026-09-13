@@ -35,6 +35,22 @@ class AuthController {
             return redirect()->route('dashboard');
         }
 
+        $employee = $user->employee;
+
+        if (!$employee || !$employee->is_active) {
+
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withErrors([
+                    'email' => 'Your employee account is inactive.',
+                ])
+                ->onlyInput('email');
+        }
+
         return redirect()->route('attendance.employee');
     }
 
@@ -43,7 +59,6 @@ class AuthController {
         Auth::logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
