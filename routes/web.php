@@ -12,6 +12,7 @@ Route::get('/', function () {
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
+
     Route::get('/login', [AuthController::class, 'showLogin'])
         ->name('login');
 
@@ -19,15 +20,21 @@ Route::middleware('guest')->group(function () {
         ->name('login.submit');
 });
 
+// Logout
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-// Protected routes
+// Authenticated routes
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+});
+
+// Admin-only routes
+Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('employees', EmployeeController::class);
+
 });
